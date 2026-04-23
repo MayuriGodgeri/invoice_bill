@@ -1,0 +1,413 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Pankaj Construction Billing</title>
+
+<style>
+
+body{
+font-family:Arial, sans-serif;
+margin:40px;
+background:#f5f5f5;
+}
+
+.container{
+background:#fff;
+padding:20px;
+border-radius:10px;
+box-shadow:0 0 10px rgba(0,0,0,0.1);
+}
+
+/* HEADER */
+
+.header{
+background:#2e8b57;
+color:#fff;
+display:flex;
+align-items:center;
+padding:15px;
+margin-bottom:20px;
+-webkit-print-color-adjust:exact;
+print-color-adjust:exact;
+}
+
+.logo{
+width:90px;
+margin-right:15px;
+}
+
+.logo img{
+width:100%;
+border-radius:4px;
+}
+
+.header-text{
+flex:1;
+text-align:center;
+}
+
+.header-text h1{
+margin:0;
+font-size:28px;
+}
+
+.header-text div{
+font-size:14px;
+}
+
+/* BILL DETAILS */
+
+.bill-info{
+display:flex;
+justify-content:space-between;
+margin-bottom:20px;
+gap:20px;
+flex-wrap:wrap;
+}
+
+.bill-info div{
+flex:1;
+}
+
+.bill-info label{
+font-weight:bold;
+display:block;
+margin-bottom:5px;
+}
+
+.bill-info input{
+width:100%;
+padding:6px;
+border:1px solid #ccc;
+border-radius:4px;
+box-sizing:border-box;
+}
+
+/* TABLE */
+
+table{
+width:100%;
+border-collapse:collapse;
+}
+
+table th, table td{
+border:1px solid #ccc;
+padding:10px;
+vertical-align:top;
+}
+
+table th{
+background:#eee;
+}
+
+/* PARTICULAR COLUMN */
+
+td:nth-child(2){
+width:45%;
+word-break:break-word;
+}
+
+/* INPUTS */
+
+textarea,input{
+width:100%;
+border:none;
+outline:none;
+background:transparent;
+font-family:Arial;
+font-size:14px;
+}
+
+textarea{
+resize:none;
+overflow:hidden;
+min-height:40px;
+white-space:pre-wrap;
+}
+
+/* PRINT TEXT */
+
+.print-text{
+display:none;
+white-space:pre-wrap;
+word-break:break-word;
+}
+
+/* BUTTONS */
+
+.btn{
+padding:10px 15px;
+margin:10px 5px;
+border:none;
+background:#007bff;
+color:white;
+cursor:pointer;
+border-radius:5px;
+}
+
+.btn-danger{
+background:red;
+}
+
+/* TOTAL */
+
+.total{
+text-align:right;
+font-size:18px;
+margin-top:20px;
+}
+
+/* PRINT MODE */
+
+@media print{
+
+.btn{
+display:none;
+}
+
+textarea,
+input{
+display:none;
+}
+
+.print-text{
+display:block;
+}
+
+.action-col,
+th:last-child{
+display:none;
+}
+
+tr{
+page-break-inside:auto;
+}
+
+}
+
+</style>
+</head>
+
+<body>
+
+<div class="container">
+
+<div class="header">
+
+<div class="logo">
+<img src="pclogo1.PNG">
+</div>
+
+<div class="header-text">
+<h1>PANKAJ CONSTRUCTION</h1>
+<div>Hno: 750/A Portavado, Siolim, Bardez Goa - 403517</div>
+<div>Contact: 9049159961 / 7796174991</div>
+</div>
+
+</div>
+
+
+<!-- BILL DETAILS -->
+
+<div class="bill-info">
+
+<div>
+<label>Bill Number</label>
+<input type="text">
+<span class="print-text"></span>
+</div>
+
+<div>
+<label>Date</label>
+<input type="date" id="billDate">
+<span class="print-text" id="printDate"></span>
+</div>
+
+</div>
+
+<div class="bill-info">
+
+<div>
+<label>Client Name</label>
+<input type="text">
+<span class="print-text"></span>
+</div>
+
+<div>
+<label>Quotation for</label>
+<input type="text">
+<span class="print-text"></span>
+</div>
+
+</div>
+
+
+<table id="billingTable">
+
+<thead>
+<tr>
+<th>Sr No</th>
+<th>Particular</th>
+<th>Size</th>
+<th>Rate</th>
+<th>Amount</th>
+<th class="action-col">Action</th>
+</tr>
+</thead>
+
+<tbody></tbody>
+
+</table>
+
+<button class="btn" onclick="addRow()">+ Add Row</button>
+<button class="btn" onclick="preparePrint()">Print / Save PDF</button>
+
+<div class="total">
+<strong>Total: ₹ <span id="total">0</span></strong>
+</div>
+
+</div>
+
+<script>
+
+let table=document.getElementById("billingTable").getElementsByTagName('tbody')[0];
+
+function addRow(){
+
+let rowCount=table.rows.length;
+
+let row=table.insertRow();
+
+row.innerHTML=`
+<td>${rowCount+1}</td>
+
+<td>
+<textarea rows="2" oninput="autoGrow(this)"></textarea>
+<div class="print-text"></div>
+</td>
+
+<td>
+<input type="text">
+<span class="print-text"></span>
+</td>
+
+<td>
+<input type="number">
+<span class="print-text"></span>
+</td>
+
+<td>
+<input type="number" value="0" oninput="calculateTotal()">
+<span class="print-text"></span>
+</td>
+
+<td class="action-col">
+<button class="btn btn-danger" onclick="deleteRow(this)">X</button>
+</td>
+`;
+
+}
+
+function deleteRow(btn){
+
+let row=btn.parentNode.parentNode;
+row.remove();
+
+updateSerial();
+calculateTotal();
+
+}
+
+function updateSerial(){
+
+let rows=table.rows;
+
+for(let i=0;i<rows.length;i++){
+rows[i].cells[0].innerHTML=i+1;
+}
+
+}
+
+function calculateTotal(){
+
+let total=0;
+
+let rows=table.rows;
+
+for(let i=0;i<rows.length;i++){
+
+let amount=rows[i].cells[4].children[0].value;
+
+total+=parseFloat(amount)||0;
+
+}
+
+document.getElementById("total").innerHTML=total.toLocaleString("en-IN");
+
+}
+
+function autoGrow(el){
+
+el.style.height="auto";
+el.style.height=(el.scrollHeight)+"px";
+
+}
+
+function preparePrint(){
+
+/* TEXTAREA TO TEXT */
+
+let textareas=document.querySelectorAll("textarea");
+
+textareas.forEach(function(area){
+
+let text=area.value;
+let printDiv=area.nextElementSibling;
+
+printDiv.innerText=text;
+
+});
+
+/* INPUTS TO TEXT */
+
+let inputs=document.querySelectorAll(".bill-info input");
+
+inputs.forEach(function(input){
+
+let span=input.nextElementSibling;
+
+if(span){
+span.innerText=input.value;
+}
+
+});
+
+/* DATE FIX FOR IOS */
+
+let dateInput=document.getElementById("billDate");
+
+if(dateInput.value){
+
+let d=new Date(dateInput.value);
+
+let day=String(d.getDate()).padStart(2,'0');
+let month=String(d.getMonth()+1).padStart(2,'0');
+let year=d.getFullYear();
+
+let formatted=day+"-"+month+"-"+year;
+
+document.getElementById("printDate").innerText=formatted;
+
+}
+
+/* PRINT */
+
+window.print();
+
+}
+
+</script>
+
+</body>
+</html>
