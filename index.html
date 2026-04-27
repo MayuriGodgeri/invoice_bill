@@ -215,7 +215,7 @@ page-break-inside:auto;
 
 <div>
 <label>Invoice Bill Number</label>
-<input type="text">
+<input type="text" id="billTo">
 <span class="print-text"></span>
 </div>
 
@@ -231,7 +231,7 @@ page-break-inside:auto;
 
 <div>
 <label>Bill to</label>
-<input type="text">
+<input type="text" id="billTo">
 <span class="print-text"></span>
 </div>
 
@@ -350,34 +350,59 @@ el.style.height=(el.scrollHeight)+"px";
 
 function preparePrint(){
 
-/* TEXTAREA TO PRINT TEXT */
+/* TEXTAREA → PRINT TEXT */
 
-let textareas = document.querySelectorAll("textarea");
+document.querySelectorAll("textarea").forEach(function(area){
 
-textareas.forEach(function(area){
-
-let text = area.value;
 let printDiv = area.nextElementSibling;
-
-printDiv.innerText = text;
+if(printDiv){
+printDiv.innerText = area.value;
+}
 
 });
 
 
-/* TABLE INPUTS TO PRINT TEXT */
+/* TABLE INPUTS → PRINT TEXT */
 
-let inputs = document.querySelectorAll("#billingTable input");
-
-inputs.forEach(function(input){
+document.querySelectorAll("#billingTable input").forEach(function(input){
 
 let span = input.nextElementSibling;
-
 if(span){
 span.innerText = input.value;
 }
 
 });
 
+
+/* TOP FIELD INPUTS → PRINT TEXT */
+
+document.querySelectorAll(".bill-info input").forEach(function(input){
+
+let span = input.nextElementSibling;
+if(span){
+span.innerText = input.value;
+}
+
+});
+
+
+/* DATE FORMAT FIX */
+
+let dateInput = document.getElementById("billDate");
+
+if(dateInput && dateInput.value){
+
+let d = new Date(dateInput.value);
+
+let day = String(d.getDate()).padStart(2,'0');
+let month = String(d.getMonth()+1).padStart(2,'0');
+let year = d.getFullYear();
+
+let formatted = day+"-"+month+"-"+year;
+
+document.getElementById("printDate").innerText = formatted;
+
+}
 
 window.print();
 
