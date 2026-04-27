@@ -270,11 +270,11 @@ let table=document.getElementById("billingTable").getElementsByTagName('tbody')[
 
 function addRow(){
 
-let rowCount=table.rows.length;
+let rowCount = table.rows.length;
 
-let row=table.insertRow();
+let row = table.insertRow();
 
-row.innerHTML=`
+row.innerHTML = `
 <td>${rowCount+1}</td>
 
 <td>
@@ -301,7 +301,6 @@ row.innerHTML=`
 <button class="btn btn-danger" onclick="deleteRow(this)">X</button>
 </td>
 `;
-
 }
 
 function deleteRow(btn){
@@ -351,57 +350,38 @@ el.style.height=(el.scrollHeight)+"px";
 
 function preparePrint(){
 
-/* TEXTAREA TO TEXT */
+/* TEXTAREA TO PRINT TEXT */
 
-let textareas=document.querySelectorAll("textarea");
+let textareas = document.querySelectorAll("textarea");
 
 textareas.forEach(function(area){
 
-let text=area.value;
-let printDiv=area.nextElementSibling;
+let text = area.value;
+let printDiv = area.nextElementSibling;
 
-printDiv.innerText=text;
+printDiv.innerText = text;
 
 });
 
-/* INPUTS TO TEXT */
 
-let inputs=document.querySelectorAll(".bill-info input");
+/* TABLE INPUTS TO PRINT TEXT */
+
+let inputs = document.querySelectorAll("#billingTable input");
 
 inputs.forEach(function(input){
 
-let span=input.nextElementSibling;
+let span = input.nextElementSibling;
 
 if(span){
-span.innerText=input.value;
+span.innerText = input.value;
 }
 
 });
 
-/* DATE FIX FOR IOS */
-
-let dateInput=document.getElementById("billDate");
-
-if(dateInput.value){
-
-let d=new Date(dateInput.value);
-
-let day=String(d.getDate()).padStart(2,'0');
-let month=String(d.getMonth()+1).padStart(2,'0');
-let year=d.getFullYear();
-
-let formatted=day+"-"+month+"-"+year;
-
-document.getElementById("printDate").innerText=formatted;
-
-}
-
-/* PRINT */
 
 window.print();
 
 }
-
 </script>
 
 </body>
